@@ -685,6 +685,57 @@ body[dir="rtl"] .ba-arrow svg{transform:scaleX(-1)}
 }
 
 
+/* ============ 3D EXPLORER ============ */
+.ex{
+  display:grid;grid-template-columns:1.55fr .95fr;gap:20px;align-items:stretch;
+  margin-bottom:30px;
+}
+.ex-stage{
+  position:relative;border:1px solid var(--line);border-radius:var(--r-m);
+  background:linear-gradient(170deg,#1B1711,#100D0A 70%);
+  overflow:hidden;min-height:clamp(320px,42vw,500px);
+}
+.ex-stage canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
+.ex-stage canvas:active{cursor:grabbing}
+.ex-hint{
+  position:absolute;inset-block-end:12px;inset-inline-start:12px;z-index:2;
+  font-family:var(--ff-mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;
+  color:rgba(244,237,225,.45);background:rgba(16,13,10,.55);border:1px solid rgba(244,237,225,.13);
+  border-radius:100px;padding:5px 11px;pointer-events:none;
+}
+body[dir="rtl"] .ex-hint{letter-spacing:0}
+.ex-load{
+  position:absolute;inset:0;display:grid;place-items:center;z-index:3;
+  font-family:var(--ff-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--iron-ink-2);background:#100D0A;
+}
+.ex-panel{
+  border:1px solid var(--line);border-radius:var(--r-m);background:var(--surface);
+  padding:24px;display:flex;flex-direction:column;gap:14px;
+}
+.ex-panel .num{
+  font-family:var(--ff-mono);font-size:11px;font-weight:600;letter-spacing:.18em;
+  color:var(--accent);
+}
+body[dir="rtl"] .ex-panel .num{letter-spacing:0}
+.ex-panel h3{font-size:clamp(20px,2.6vw,26px);font-weight:800;text-transform:uppercase}
+.ex-panel p{color:var(--ink-2);font-size:15px;line-height:1.62}
+.ex-panel #expanel{display:flex;flex-direction:column;gap:12px;flex:1}
+.ex-zones{display:flex;flex-wrap:wrap;gap:7px;margin-top:2px}
+.ex-zone{
+  border:1px solid var(--line);background:var(--bg);cursor:pointer;
+  border-radius:100px;padding:7px 13px;font-family:var(--ff-mono);font-size:10.5px;
+  font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);
+  transition:border-color .2s ease,color .2s ease,background .2s ease;
+}
+body[dir="rtl"] .ex-zone{letter-spacing:0}
+.ex-zone:hover{border-color:var(--ink-3);color:var(--ink)}
+.ex-zone.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+@media (max-width:900px){
+  .ex{grid-template-columns:1fr}
+  .ex-stage{min-height:300px}
+}
+
 /* ============ PHOTO BAND ============ */
 .photoband{position:relative;overflow:hidden;background:var(--iron)}
 .photoband > .pb-bg{position:absolute;inset:0;z-index:0;overflow:hidden}
@@ -937,6 +988,7 @@ body[dir="rtl"] .live-foot{letter-spacing:0}
   </div>
 </header>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <div class="scrollprog" id="sprog"></div>
 <main id="main"></main>
 
@@ -1121,22 +1173,22 @@ var CLASSES = [
 ];
 
 var FACILITIES = [
-  {g:"01",k:"lifting",nameEn:"Lifting Hall",nameAr:"قاعة رفع الأثقال",tagEn:"Al Quoz",tagAr:"القوز",
+  {g0:"01",k:"lifting",g:{x:-5.6,z:-4.2,w:8.2,d:6.2,kind:"rack"},nameEn:"Lifting Hall",nameAr:"قاعة رفع الأثقال",tagEn:"Al Quoz",tagAr:"القوز",
    dEn:"Twelve competition platforms, calibrated plates, four GHDs and a dedicated chalk bowl per platform.",
    dAr:"اثنتا عشرة منصة منافسة، أوزان معايرة، وأربعة أجهزة GHD."},
-  {g:"02",k:"cond",nameEn:"Conditioning Floor",nameAr:"صالة اللياقة",tagEn:"All branches",tagAr:"كل الفروع",
+  {g0:"02",k:"cond",g:{x:4.6,z:-4.2,w:8.2,d:6.2,kind:"erg"},nameEn:"Conditioning Floor",nameAr:"صالة اللياقة",tagEn:"All branches",tagAr:"كل الفروع",
    dEn:"Twenty rowers, ten ski ergs, eight air bikes and a 30-metre indoor sled track.",
    dAr:"عشرون جهاز تجديف، عشرة أجهزة تزلج، ومضمار زلاجة داخلي بطول ٣٠ مترًا."},
-  {g:"03",k:"reformer",nameEn:"Reformer Studio",nameAr:"استوديو الريفورمر",tagEn:"JLT",tagAr:"أبراج بحيرات جميرا",
+  {g0:"03",k:"reformer",g:{x:-6.4,z:2.6,w:6.4,d:5.0,kind:"reformer"},nameEn:"Reformer Studio",nameAr:"استوديو الريفورمر",tagEn:"JLT",tagAr:"أبراج بحيرات جميرا",
    dEn:"Ten reformers, cadillac, ladder barrel. Capped at ten so every session stays hands-on.",
    dAr:"عشرة أجهزة ريفورمر وكاديلاك. الحد الأقصى عشرة أشخاص لكل حصة."},
-  {g:"04",k:"boxing",nameEn:"Boxing Room",nameAr:"غرفة الملاكمة",tagEn:"Business Bay",tagAr:"الخليج التجاري",
+  {g0:"04",k:"boxing",g:{x:0.9,z:2.6,w:6.0,d:5.0,kind:"bag"},nameEn:"Boxing Room",nameAr:"غرفة الملاكمة",tagEn:"Business Bay",tagAr:"الخليج التجاري",
    dEn:"Sprung floor, twelve heavy bags, two double-end bags and a full-size sparring ring.",
    dAr:"أرضية مرنة، اثنا عشر كيس ملاكمة، وحلبة تدريب كاملة."},
-  {g:"05",k:"recovery",nameEn:"Recovery Suite",nameAr:"جناح الاستشفاء",tagEn:"Al Quoz · JLT",tagAr:"القوز · أبراج بحيرات جميرا",
+  {g0:"05",k:"recovery",g:{x:7.4,z:2.6,w:4.4,d:5.0,kind:"plunge"},nameEn:"Recovery Suite",nameAr:"جناح الاستشفاء",tagEn:"Al Quoz · JLT",tagAr:"القوز · أبراج بحيرات جميرا",
    dEn:"Infrared sauna, two cold plunges held at 9°C, compression boots and a quiet room.",
    dAr:"ساونا بالأشعة تحت الحمراء، وحوضا ماء بارد عند ٩ درجات، وغرفة هادئة."},
-  {g:"06",k:"lounge",nameEn:"Members' Lounge",nameAr:"صالة الأعضاء",tagEn:"All branches",tagAr:"كل الفروع",
+  {g0:"06",k:"lounge",g:{x:-1.0,z:7.4,w:14.0,d:3.2,kind:"lounge"},nameEn:"Members' Lounge",nameAr:"صالة الأعضاء",tagEn:"All branches",tagAr:"كل الفروع",
    dEn:"Protein bar, filtered water stations, prayer room, and lockers you can keep month to month.",
    dAr:"بار بروتين، محطات مياه، مصلّى، وخزائن شهرية."}
 ];
@@ -1373,6 +1425,15 @@ var T = {
   vid:{en:"Looping background \u2014 swap for the club\u2019s own footage",ar:"\u062e\u0644\u0641\u064a\u0629 \u0645\u062a\u0643\u0631\u0631\u0629 \u2014 \u062a\u064f\u0633\u062a\u0628\u062f\u0644 \u0628\u0644\u0642\u0637\u0627\u062a \u0627\u0644\u0646\u0627\u062f\u064a"},
   demo_note:{en:"Demo booking — nothing is sent and no data is stored.",ar:"حجز تجريبي — لا يتم إرسال أو تخزين أي بيانات."},
 
+  ex_eye:{en:"Explore the floor",ar:"استكشف الصالة"},
+  ex_h:{en:"Every zone, in three dimensions",ar:"كل منطقة، بثلاثة أبعاد"},
+  ex_p:{en:"This is the Al Quoz floor plan. Drag to turn it, tap a zone to see what is in it.",
+        ar:"هذا مخطط صالة القوز. اسحب لتدويره، واضغط على أي منطقة لمعرفة محتوياتها."},
+  ex_hint:{en:"Drag to rotate · tap a zone",ar:"اسحب للتدوير · اضغط على منطقة"},
+  ex_load:{en:"Loading floor plan",ar:"جارٍ تحميل المخطط"},
+  ex_pick:{en:"Pick a zone to see the detail.",ar:"اختر منطقة لعرض التفاصيل."},
+  ex_no:{en:"Your browser can't show the 3D floor plan, so here is the full list instead.",
+         ar:"متصفحك لا يدعم المخطط ثلاثي الأبعاد، وهذه القائمة الكاملة بدلًا منه."},
   fo_eye:{en:"Who started it",ar:"من بدأ هذا"},
   fo_h:{en:"The two who opened the doors",ar:"الاثنان اللذان فتحا الأبواب"},
   fo_p:{en:"Marwan and Lea still coach on the floor every week. Between them they have decided every rule this club runs on.",
@@ -1525,6 +1586,20 @@ function facTile(f){
 
 function pgFacilities(){
   return '<section class="sec"><div class="wrap">'+
+    '<div class="sec-head rv"><div class="eyebrow">'+t("ex_eye")+'</div><h2>'+t("ex_h")+'</h2><p>'+t("ex_p")+'</p></div>'+
+    '<div class="ex" id="ex">'+
+      '<div class="ex-stage" id="exstage"><div class="ex-load" id="exload">'+t("ex_load")+'</div>'+
+        '<span class="ex-hint">'+t("ex_hint")+'</span></div>'+
+      '<div class="ex-panel">'+
+        '<div id="expanel"><div class="num">\u2014</div><h3>'+t("fac_h")+'</h3>'+
+          '<p>'+t("ex_pick")+'</p></div>'+
+        '<div class="ex-zones" id="exzones">'+FACILITIES.map(function(f,i){
+          return '<button class="ex-zone" type="button" data-zi="'+i+'">'+esc(lang==="ar"?f.nameAr:f.nameEn)+'</button>';
+        }).join('')+'</div>'+
+      '</div>'+
+    '</div>'+
+  '</div></section>'+
+  '<section class="sec" style="padding-top:0"><div class="wrap">'+
     '<div class="sec-head rv"><div class="eyebrow">'+t("fac_eye")+'</div><h2>'+t("fac_h")+'</h2><p>'+t("fac_p")+'</p></div>'+
     '<div class="grid g3 rv">'+FACILITIES.map(facTile).join('')+'</div>'+
   '</div></section>';
@@ -1902,9 +1977,263 @@ window.addEventListener("scroll", scrollProg, {passive:true});
 window.addEventListener("resize", scrollProg);
 
 function initPage(){
-  tuneVideo(); initSpot(); countUp(); initReveal(); scrollProg();
+  tuneVideo(); initSpot(); countUp(); initReveal(); scrollProg(); initFacility3D();
   if(liveTimer) clearInterval(liveTimer);
   if(document.getElementById("livegrid")){ tickLive(); liveTimer = setInterval(tickLive, 1000); }
+}
+
+/* ================= 3D FACILITY EXPLORER ================= */
+var EX = null;
+
+function exDetail(i){
+  var p = document.getElementById("expanel"); if(!p) return;
+  var f = FACILITIES[i];
+  p.innerHTML =
+    '<div class="num">'+f.g0+' · '+esc(lang==="ar"?f.tagAr:f.tagEn)+'</div>'+
+    '<h3>'+esc(lang==="ar"?f.nameAr:f.nameEn)+'</h3>'+
+    '<p>'+esc(lang==="ar"?f.dAr:f.dEn)+'</p>';
+  var zs = document.getElementById("exzones");
+  if(zs) Array.prototype.forEach.call(zs.children, function(b,j){ b.classList.toggle("on", j===i); });
+}
+
+function initFacility3D(){
+  var stage = document.getElementById("exstage");
+  if(!stage) { if(EX){ EX.dispose(); EX = null; } return; }
+  if(EX) EX.dispose();
+
+  var load = document.getElementById("exload");
+  if(typeof THREE === "undefined"){
+    var wrap = document.getElementById("ex");
+    if(wrap) wrap.innerHTML = '<div class="empty" style="grid-column:1/-1">'+t("ex_no")+'</div>';
+    return;
+  }
+
+  var W = stage.clientWidth || 800, H = stage.clientHeight || 420;
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var small = window.innerWidth < 760;
+
+  var scene = new THREE.Scene();
+  scene.fog = new THREE.Fog(0x100D0A, 26, 62);
+
+  var cam = new THREE.PerspectiveCamera(38, W/H, 0.1, 200);
+  var renderer = new THREE.WebGLRenderer({antialias: !small, alpha: false});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, small ? 1.6 : 2));
+  renderer.setSize(W, H, false);
+  renderer.setClearColor(0x100D0A, 1);
+  renderer.shadowMap.enabled = !small;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  stage.appendChild(renderer.domElement);
+
+  scene.add(new THREE.AmbientLight(0x6b7784, 0.55));
+  var key = new THREE.DirectionalLight(0xffc48a, 1.25);
+  key.position.set(11, 17, 7);
+  if(!small){
+    key.castShadow = true;
+    key.shadow.mapSize.width = key.shadow.mapSize.height = 1024;
+    var c = key.shadow.camera;
+    c.left=-18; c.right=18; c.top=18; c.bottom=-18; c.near=1; c.far=55;
+  }
+  scene.add(key);
+  var rim = new THREE.DirectionalLight(0x89a6c4, 0.5);
+  rim.position.set(-10, 8, -9); scene.add(rim);
+
+  var ACC = 0xE2532 * 16 + 5;           /* 0xE25325 */
+  var root = new THREE.Group(); scene.add(root);
+
+  /* --- slab --- */
+  var slab = new THREE.Mesh(
+    new THREE.BoxGeometry(23, 0.7, 20),
+    new THREE.MeshStandardMaterial({color:0x211C17, roughness:0.95, metalness:0.05}));
+  slab.position.set(0, -0.35, 1.2);
+  slab.receiveShadow = !small;
+  root.add(slab);
+
+  var grid = new THREE.GridHelper(22, 22, 0x3A3127, 0x2A241D);
+  grid.position.set(0, 0.012, 1.2);
+  grid.material.opacity = 0.5; grid.material.transparent = true;
+  root.add(grid);
+
+  /* --- props per zone kind --- */
+  var matProp = new THREE.MeshStandardMaterial({color:0x0E0B09, roughness:0.85, metalness:0.15});
+  function box(g,w,h,d,x,y,z){
+    var m = new THREE.Mesh(new THREE.BoxGeometry(w,h,d), matProp);
+    m.position.set(x, y, z); m.castShadow = !small; g.add(m); return m;
+  }
+  function cyl(g,r,h,x,y,z,rot){
+    var m = new THREE.Mesh(new THREE.CylinderGeometry(r,r,h,14), matProp);
+    m.position.set(x,y,z); if(rot) m.rotation.z = Math.PI/2;
+    m.castShadow = !small; g.add(m); return m;
+  }
+  function props(g, kind, w, d){
+    if(kind==="rack"){
+      for(var i=0;i<3;i++){
+        var x = -w/2 + 1.6 + i*(w-3.2)/2;
+        box(g,.22,2.4,.22, x-.8, 1.2, -d/4);
+        box(g,.22,2.4,.22, x+.8, 1.2, -d/4);
+        box(g,1.9,.18,.18, x, 1.9, -d/4);
+        cyl(g,.42,.22, x, .5, d/5, true);
+        cyl(g,.42,.22, x+.5, .5, d/5, true);
+      }
+    } else if(kind==="erg"){
+      for(var j=0;j<4;j++){
+        var e = new THREE.Mesh(new THREE.BoxGeometry(.5,.3,2.6), matProp);
+        e.position.set(-w/2+1.2+j*(w-2.4)/3, .3, 0);
+        e.rotation.x = -0.22; e.castShadow = !small; g.add(e);
+        box(g,.7,.5,.4, -w/2+1.2+j*(w-2.4)/3, .6, -1.25);
+      }
+    } else if(kind==="reformer"){
+      for(var k=0;k<3;k++){
+        var z = -d/2 + 1.2 + k*(d-2.4)/2;
+        box(g,w-1.6,.14,.5, 0, .5, z);
+        box(g,1.5,.35,.75, -.6, .72, z);
+        box(g,.22,.5,.6, w/2-1.0, .5, z);
+      }
+    } else if(kind==="bag"){
+      for(var b=0;b<4;b++){
+        var bx = -w/2+1.1+b*(w-2.2)/3;
+        box(g,.1,1.0,.1, bx, 2.6, 0);
+        cyl(g,.32,1.7, bx, 1.25, 0);
+      }
+    } else if(kind==="plunge"){
+      box(g,w-1.4,.85,1.5, 0, .42, -d/2+1.3);
+      box(g,w-2.0,.7,1.4, 0, .45, d/2-1.5);
+      box(g,.25,1.9,.25, -w/2+.7, .95, 0);
+    } else if(kind==="lounge"){
+      box(g,w-2.5,.75,.85, 0, .38, -.4);
+      for(var c2=0;c2<7;c2++) cyl(g,.26,.75, -w/2+2.0+c2*(w-4)/6, .38, .9);
+    }
+  }
+
+  /* --- zones --- */
+  var zones = [];
+  FACILITIES.forEach(function(f, i){
+    var G = f.g, grp = new THREE.Group();
+    var mat = new THREE.MeshStandardMaterial({
+      color:0x2E3740, roughness:0.78, metalness:0.10,
+      emissive:0x000000, emissiveIntensity:0.9});
+    var pad = new THREE.Mesh(new THREE.BoxGeometry(G.w, 0.34, G.d), mat);
+    pad.position.y = 0.17; pad.receiveShadow = !small; pad.castShadow = !small;
+    grp.add(pad);
+    var edge = new THREE.LineSegments(
+      new THREE.EdgesGeometry(new THREE.BoxGeometry(G.w, 0.34, G.d)),
+      new THREE.LineBasicMaterial({color:0x8FA6B8, transparent:true, opacity:0.35}));
+    edge.position.y = 0.17; grp.add(edge);
+    props(grp, G.kind, G.w, G.d);
+    grp.position.set(G.x, 0, G.z);
+    grp.userData = {i:i, mat:mat, edge:edge, baseY:0};
+    root.add(grp);
+    zones.push(grp);
+  });
+
+  /* --- camera orbit --- */
+  var theta = -0.72, phi = 0.95, radius = 34, target = new THREE.Vector3(0, 0.2, 1.4);
+  function place(){
+    cam.position.set(
+      target.x + radius*Math.sin(phi)*Math.sin(theta),
+      target.y + radius*Math.cos(phi),
+      target.z + radius*Math.sin(phi)*Math.cos(theta));
+    cam.lookAt(target);
+  }
+  place();
+
+  var drag=false, lx=0, ly=0, idle=0, moved=0;
+  function down(e){ drag=true; moved=0; idle=0;
+    lx=(e.touches?e.touches[0].clientX:e.clientX); ly=(e.touches?e.touches[0].clientY:e.clientY); }
+  function move(e){
+    var cx=(e.touches?e.touches[0].clientX:e.clientX), cy=(e.touches?e.touches[0].clientY:e.clientY);
+    if(drag){
+      var dx=cx-lx, dy=cy-ly; moved += Math.abs(dx)+Math.abs(dy);
+      theta -= dx*0.006;
+      phi = Math.max(0.42, Math.min(1.32, phi - dy*0.004));
+      lx=cx; ly=cy; idle=0; place();
+      if(e.cancelable) e.preventDefault();
+    }
+    hover(cx, cy);
+  }
+  function up(){ drag=false; }
+  var el = renderer.domElement;
+  el.addEventListener("pointerdown", down);
+  window.addEventListener("pointermove", move, {passive:false});
+  window.addEventListener("pointerup", up);
+
+  /* --- picking --- */
+  var ray = new THREE.Raycaster(), ndc = new THREE.Vector2(), hovered = -1, picked = -1;
+  function zoneAt(cx, cy){
+    var r = el.getBoundingClientRect();
+    ndc.x = ((cx-r.left)/r.width)*2-1; ndc.y = -((cy-r.top)/r.height)*2+1;
+    ray.setFromCamera(ndc, cam);
+    var hit = ray.intersectObjects(zones, true);
+    if(!hit.length) return -1;
+    var o = hit[0].object;
+    while(o && o.userData.i === undefined) o = o.parent;
+    return o ? o.userData.i : -1;
+  }
+  function hover(cx, cy){
+    if(drag) return;
+    var i = zoneAt(cx, cy);
+    if(i !== hovered){ hovered = i; el.style.cursor = i>=0 ? "pointer" : "grab"; }
+  }
+  el.addEventListener("click", function(e){
+    if(moved > 8) return;
+    var i = zoneAt(e.clientX, e.clientY);
+    if(i >= 0) select(i);
+  });
+
+  function select(i){
+    picked = i; idle = 0;
+    exDetail(i);
+  }
+
+  var zs = document.getElementById("exzones");
+  if(zs) zs.addEventListener("click", function(e){
+    var b = e.target.closest("[data-zi]"); if(!b) return;
+    select(Number(b.getAttribute("data-zi")));
+  });
+
+  /* --- loop --- */
+  var raf = 0, visible = true, t0 = performance.now();
+  var obs = ("IntersectionObserver" in window) ? new IntersectionObserver(function(en){
+    visible = en[0].isIntersecting;
+  }, {threshold:0.02}) : null;
+  if(obs) obs.observe(stage);
+
+  function frame(now){
+    raf = requestAnimationFrame(frame);
+    if(!visible) return;
+    var dt = Math.min(0.05, (now - t0)/1000); t0 = now;
+    idle += dt;
+    if(!reduce && !drag && idle > 3.5) theta -= dt*0.085, place();
+    zones.forEach(function(g){
+      var d = g.userData, want = (d.i===picked) ? 0.55 : (d.i===hovered ? 0.18 : 0);
+      g.position.y += (want - g.position.y)*Math.min(1, dt*9);
+      var on = (d.i===picked) ? 1 : (d.i===hovered ? 0.35 : 0);
+      d.mat.color.lerp(new THREE.Color(on>0.7 ? 0xA83916 : 0x2E3740), Math.min(1, dt*7));
+      d.mat.emissive.lerp(new THREE.Color(on>0.7 ? 0x2a0c03 : 0x000000), Math.min(1, dt*7));
+      d.edge.material.opacity += ((on>0.7?0.9:(on>0?0.6:0.35)) - d.edge.material.opacity)*Math.min(1,dt*7);
+    });
+    renderer.render(scene, cam);
+  }
+  raf = requestAnimationFrame(frame);
+  if(load) load.remove();
+
+  function resize(){
+    var w = stage.clientWidth, h = stage.clientHeight;
+    if(!w || !h) return;
+    cam.aspect = w/h; cam.updateProjectionMatrix(); renderer.setSize(w, h, false);
+  }
+  window.addEventListener("resize", resize);
+
+  EX = {dispose: function(){
+    cancelAnimationFrame(raf);
+    window.removeEventListener("pointermove", move);
+    window.removeEventListener("pointerup", up);
+    window.removeEventListener("resize", resize);
+    if(obs) obs.disconnect();
+    renderer.dispose();
+    if(renderer.domElement.parentNode) renderer.domElement.parentNode.removeChild(renderer.domElement);
+  }};
+
+  select(0);
 }
 
 /* ================= ROUTER ================= */
